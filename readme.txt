@@ -1,0 +1,1 @@
+Chrome plugin that shortens and copies the current URL.
