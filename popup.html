@@ -12,39 +12,12 @@ label {
 <label for="url">Short URL: </label><input type="url" name="url" id="url" />
 
 <script>
-var data;
-chrome.windows.getCurrent(function(window) {
-    chrome.tabs.getSelected(window.id, function(tab) {
-        if (tab) {
-            url = encodeURI(tab.url);
-            shorten(url);
-        }
-        console.debug(window);
-        console.debug(tab);
+    chrome.extension.sendRequest({shorten_url: true}, function(response) {
+        console.debug(response);
+        var input = document.getElementById('url');
+        input.value = response.id;
+        input.focus();
+        input.select();
     });
-});
-
-var shorten = function(url) {
-    var data = '{"longUrl": "' + url + '"}';
-
-    var req = new XMLHttpRequest();
-    req.open(
-        'POST',
-        'https://www.googleapis.com/urlshortener/v1/url'
-    );
-    req.setRequestHeader('Content-Type', 'application/json');
-    req.onload = function() {
-        copyURL(JSON.parse(req.responseText));
-    };
-    req.send(data);
-}
-
-var copyURL = function (response) {
-    var input = document.getElementById('url');
-    input.value = response.id;
-    input.focus();
-    input.select();
-    document.execCommand('Copy');
-}
 </script>
 

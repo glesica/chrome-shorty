@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+    <title>Shorty</title>
+</head>
+<body>
+
+    <input type="url" name="url" id="url" />
+
+    <script>
+        // Shortens a URL using the goo.gl service. Callback 
+        // should be of the form `f(rd)` where `rd` is an object 
+        // representing the response JSON.
+        var shorten = function(url, callback) {
+            var data = '{"longUrl": "' + encodeURI(url) + '"}';
+
+            var req = new XMLHttpRequest();
+            req.open(
+                'POST',
+                'https://www.googleapis.com/urlshortener/v1/url'
+            );
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.onload = function() {
+                callback(JSON.parse(req.responseText));
+            };
+            req.send(data);
+        }
+
+        // Copies some text to the system clipboard using the 
+        // <input> workaround.
+        var copyURL = function(response) {
+            var input = document.getElementById('url');
+            input.value = response.id;
+            input.focus();
+            input.select();
+            document.execCommand('Copy');
+        }
+    
+        // Listen for requests to shorten/copy URLs.
+        chrome.extension.onRequest.addListener(
+            function(request, sender, sendResponse) {
+                console.debug(request); //DEBUG
+                if (request.shorten_url) {
+                    callback = function(response) {
+                        copyURL(response);
+                        if (sendResponse) {
+                            sendResponse(response);
+                        }
+                    }
+                
+                    if (request.shorten_url == true) {
+                        // No URL means we use the current window/tab one.
+                        chrome.tabs.getSelected(null, function(tab) {
+                            console.debug(tab); //DEBUG
+                            if (tab) {
+                                shorten(tab.url, callback);
+                            }
+                        });
+                    } else {
+                        // We got a specific URL to shorten.
+                        shorten(request.shorten_url, callback);
+                    }
+                }
+            }
+        );
+    </script>
+</body>

@@ -2,12 +2,24 @@
     "name": "Shorty",
     "version": "1.0",
     "description": "Shortens and copies the current URL for you.",
+    "permissions": [
+        "tabs",
+        "https://www.googleapis.com/"
+    ],
+    
     "browser_action": {
         "default_icon": "icon.png",
         "popup": "popup.html"
     },
-    "permissions": [
-        "tabs",
-        "https://www.googleapis.com/"
+    "background_page": "background.html",
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "inject.js"
+            ]
+        }
     ]
 }
