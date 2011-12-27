@@ -1,15 +1,20 @@
 <style>
 body {
-  overflow-x:hidden;
-}
-
-label {
+  background: #eee;
   font-family: sans-serif;
   font-size: 80%;
+  overflow-x: hidden;
+}
+
+input {
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  padding: 3px 5px;
 }
 </style>
 
 <label for="url">Short URL: </label><input type="url" name="url" id="url" />
+<p><small>The shortened URL has been copied to the clipboard.</small></p>
 
 <script>
     chrome.extension.sendRequest({shorten_url: true}, function(response) {
